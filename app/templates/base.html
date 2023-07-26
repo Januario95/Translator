@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="{% static 'roboto.css' %}">
+        {% block title %}
+            <title>Budget Tracking</title>
+        {% endblock %}
+        
+        <style>
+            body {
+                font-weight: bold;
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 0;
+            }
+            .header {
+                padding: 8px 0px;
+                margin: 0;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                align-items: center;
+                background-color: #353740;
+                font-weight: bold;
+            }
+            .top-header {
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+            }
+            .logo {
+                color: white;
+                font-size: 25px;
+                text-decoration: none;
+            }
+            .search-div {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: white;
+                padding: 2px 7px;
+                width: 20%;
+                border-radius: 20px;
+            }
+            .search-field {
+                border: none;
+                outline: none;
+                width: 100%;
+                border-radius: 10px;
+            }
+            .search-field:focus {
+                outline: none;
+            }
+            .current-time {
+                color: white;
+            }
+            .search-btn {
+                cursor: pointer;
+            }
+            .bottom-header {
+                width: 50%;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                margin-top: 10px;
+            }
+            .bottom-header a {
+                color: #ccc;
+                text-decoration: none;
+                transition: all 0.3s ease-in-out;
+            }
+            .bottom-header a:hover {
+                color: white;
+                transform: scale(1.01);
+            }
+        </style>
+        {% block style %}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="top-header">
+                    <a class="logo" href="#">Jaci inc.</a>
+                    <div class="search-div">
+                        <input type="text" class="search-field" placeholder="Search">
+                        <span class="search-btn">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a class="current-time" hred="#"></a>
+                </div>
+                <div class="bottom-header">
+                    <a href="#">ADD EXPENSE</a>
+                    <a href="#">EXPENSES</a>
+                    <a href="#">CATER</a>
+                    <a href="#">HIPPIE</a>
+                </div>
+            </div>
+            
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <script src="{% static 'jquery-3.6.1.min.js' %}"></script>
+        <script>
+            let currentTime = document.querySelector('.current-time');
+            function formatTime(time) {
+                if (parseFloat(time) < 10) {
+                    time = '0' + time;
+                }
+                return time;
+            }
+            loadCurrentTime();
+            function loadCurrentTime() {
+                let time = new Date();
+                currentTime.textContent = formatTime(time.getHours()) + ':' + formatTime(time.getMinutes()) + ':' + formatTime(time.getSeconds());
+            }
+            let setInterval1 = setInterval(loadCurrentTime, 1000);
+        </script>
+        {% block javascript %}
+        {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,209 @@
+{% include "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Translate</title>
+{% endblock %}
+
+{% block style %}
+    <style>
+        .main-body {
+            background: url("{% static 'Translate.png' %}");
+            width: 100%;
+            height: 100%;
+            min-height: 86vh;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .body-div {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 0px;
+            padding-top: 0px;
+        }
+        .body-div form {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .data-field {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        input[type="text"], input[type="submit"], select {
+            width: 95%;
+            border-radius: 6px;
+            border: none;
+            height: 33px;
+            text-align: center;
+            outline: none;
+        }
+        .data-field input[type="checkbox"] {
+            width: 25px;
+            height: 25px;
+            border-radius: 6px;
+            border: none;
+            text-align: center;
+            outline: none;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            border-top-left-radius: 6px;
+            border-bottom-left-radius: 6px;
+            border: none;
+            text-align: center;
+            outline: none;
+            resize: none;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid lightgreen;
+        }
+        .btn-submit {
+            margin-top: 8px;
+            cursor: pointer;
+            background-color: #353740;
+            color: white;
+            font-weight: bold;
+        }
+        .form-row {
+            width: 95%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        .output-field {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            background-color: rgb(218,220,224);
+            border-top-right-radius: 6px;
+            border-bottom-right-radius: 6px;
+            height: 104px;
+        }
+        .result span {
+            font-size: 15px;
+            padding: 10px;
+        }
+        .flexible-translation div {
+            width: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+{% endblock %}
+
+ {% block content %}
+    <div class="main-body">
+        <div class="body-div">
+            <h2>Add Expense</h2>
+            <form method="post">
+                <div class="data-field">
+                    <div class="form-row">
+                        <label>Translator</label>
+                        {{ form.from_language }}
+                    </div>
+                    <div class="form-row">
+                        <label>To language</label>
+                        {{ form.to_language}}
+                    </div>
+                </div>
+                <div class="data-field flexible-div">
+                    <div>
+                        Flexible translation
+                        <input type="checkbox" class="flexible-translation">
+                    </div>
+                </div>
+                
+                <div class="data-field">
+                    <div class="form-row result">
+                        {{ form.query_text }}
+                    </div>
+                    <div class="form-row result output-field">
+                        <span class="query-result">{{ translation }}</span>
+                    </div>
+                </div>
+                {% csrf_token %}
+                <input type="submit" class="btn-submit" value="Translate">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        let fromLanguage = document.getElementById('id_from_language');
+        let toLanguage = document.getElementById('id_to_language');
+        let querytText = document.querySelector('#id_query_text');
+        let queryResult = document.querySelector('.query-result');
+        let flexibleTranslation = document.querySelector('.flexible-translation');
+        let btnSubmit = document.querySelector('.btn-submit');
+        // id_query_text.defaultValue = 'Any discussion of the massacre in the Mainland China is strictly sensored';
+        let csrfToken = "{{ csrf_token }}";
+
+        flexibleTranslation.addEventListener('input', e => {
+            if (e.target.checked) {
+                // btnSubmit.disabled = true;
+                btnSubmit.style.display = 'none';
+                translateFunc(runFlexible=true);
+            } else {
+                // btnSubmit.disabled = false;
+                btnSubmit.style.display = 'block';
+                translateFunc(runFlexible=false);
+            }
+        });
+
+        function translateFunc(runFlexible=true) {
+            //id_query_text.addEventListener('mouseleave', e => {
+            if (runFlexible) {
+                querytText.addEventListener('input', e => {
+                    let value = e.target.value;
+                    if (value.length < 1) {
+                        //
+                    } else {
+                        //
+                        fetch('/translate_api/', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+
+                            },
+                            body: JSON.stringify({
+                                'from_language': fromLanguage.value,
+                                'to_language': toLanguage.value,
+                                'query_text': e.target.value
+                            })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                console.log(data);
+                                queryResult.textContent = data.translation;
+                            })
+                            .catch(err => console.error(err));
+                    }
+                })
+            } else {
+                querytText.removeEventListener('input', e => {
+                    //
+                });
+            }
+        }
+    </script>
+{% endblock %}
